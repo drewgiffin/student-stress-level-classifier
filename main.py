@@ -10,7 +10,6 @@ def main():
     df = load_data()
     
     #preprocessing
-    # inspect_data(df)
     preprocess_data(df)
     
     #exploratory data analysis
