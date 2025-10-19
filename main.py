@@ -2,22 +2,45 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 data_path = "student_lifestyle_dataset.csv"
 
 def main():
-    #loading
+    # loading
     df = load_data()
     
-    #preprocessing
+    # preprocessing
     df_clean = preprocess_data(df)
     
-    #exploratory data analysis
+    # exploratory data analysis
     # draw_plots(df_clean)
     
-    #feature engineering
+    # feature engineering
     normalize_features(df_clean)
+    
+    # separate features and target
+    X = df_clean.drop('Stress_Level', axis=1)
+    y_raw = df_clean['Stress_Level']
+        
+    # encode target
+    le = LabelEncoder()
+    y = le.fit_transform(y_raw)
+    
+    # split into train and test data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, stratify=y
+    )   
+    
+    # sanity check
+    print("Classes:", le.classes_)
+    print("y_train distribution:", pd.Series(y_train).value_counts(normalize=True))
+    print("y_test distribution:", pd.Series(y_test).value_counts(normalize=True))
+    print("X_train shape:", X_train.shape, "X_test shape:", X_test.shape)
+    
     
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
