@@ -10,10 +10,10 @@ def main():
     df = load_data()
     
     #preprocessing
-    preprocess_data(df)
+    df_clean = preprocess_data(df)
     
     #exploratory data analysis
-    draw_plots(df)
+    draw_plots(df_clean)
     
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
@@ -39,7 +39,8 @@ def clean_data(df):
     print(df.isnull().sum())
     print("\n")
     
-    df.dropna(inplace=True)
+    df.dropna(inplace=False)
+    return df
 
 def order_data_stress_level(df):
     df["Stress_Level"] = pd.Categorical(
@@ -77,7 +78,8 @@ def draw_plots(df):
     display_feature_boxplots(df)
 
 def preprocess_data(df):
-    clean_data(df)
-    order_data_stress_level(df)
+    df_clean = clean_data(df)
+    order_data_stress_level(df_clean)
+    return df_clean
 
 main()
