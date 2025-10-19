@@ -1,14 +1,25 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 data_path = "student_lifestyle_dataset.csv"
 
 def main():
+    #loading
     df = load_data()
-    inspect_data(df)
-    df_clean = clean_data(df)
+    
+    #preprocessing
+    # inspect_data(df)
+    preprocess_data(df)
+    
+    #exploratory data analysis
+    draw_plots(df)
     
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
+    #removing uneeded feature
+    df.drop("Student_ID", axis=1, inplace=True)
     return df
 
 def inspect_data(df):
@@ -29,7 +40,45 @@ def clean_data(df):
     print(df.isnull().sum())
     print("\n")
     
-    df_clean = df.dropna(inplace=False)
-    return df_clean
+    df.dropna(inplace=True)
+
+def order_data_stress_level(df):
+    df["Stress_Level"] = pd.Categorical(
+        df["Stress_Level"],
+        categories=["Low", "Moderate", "High"],
+        ordered=True
+    )
+
+def display_feature_distributions_histogram(df):
+    df.hist(bins=20, figsize=(10,8))
+    plt.suptitle("Feature Distributions")
+    plt.show()
+    
+def display_scatter_plot_matrix(df):
+    sns.pairplot(df, hue="Stress_Level")
+    plt.suptitle("Pair Plot of Numerical Features", y=1.02)
+    plt.show()
+    
+def display_correlation_heatmap(df):
+    corr = df.corr(numeric_only=True)
+    sns.heatmap(corr, annot=True, cmap="coolwarm")
+    plt.title("Correlation Heatmap")
+    plt.show()
+    
+def display_feature_boxplots(df):
+    for col in df.select_dtypes(include=[np.number]).columns:
+        sns.boxplot(x="Stress_Level", y=col, data=df)
+        plt.title(f"{col} by Stress Level")
+        plt.show()
+
+def draw_plots(df):
+    display_feature_distributions_histogram(df)
+    display_scatter_plot_matrix(df)
+    display_correlation_heatmap(df)
+    display_feature_boxplots(df)
+
+def preprocess_data(df):
+    clean_data(df)
+    order_data_stress_level(df)
 
 main()
