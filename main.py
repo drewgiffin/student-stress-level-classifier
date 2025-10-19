@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
 
 data_path = "student_lifestyle_dataset.csv"
 
@@ -13,7 +14,10 @@ def main():
     df_clean = preprocess_data(df)
     
     #exploratory data analysis
-    draw_plots(df_clean)
+    # draw_plots(df_clean)
+    
+    #feature engineering
+    normalize_features(df_clean)
     
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
@@ -35,9 +39,9 @@ def inspect_data(df):
     print("\n")
 
 def clean_data(df):
-    print("Missing values:")
-    print(df.isnull().sum())
-    print("\n")
+    # print("Missing values:")
+    # print(df.isnull().sum())
+    # print("\n")
     
     df.dropna(inplace=False)
     return df
@@ -81,5 +85,14 @@ def preprocess_data(df):
     df_clean = clean_data(df)
     order_data_stress_level(df_clean)
     return df_clean
+
+def normalize_features(df):
+    scaler = MinMaxScaler()
+    df[["Study_Hours_Per_Day"]] = scaler.fit_transform(df[["Study_Hours_Per_Day"]])
+    df[["Extracurricular_Hours_Per_Day"]] = scaler.fit_transform(df[["Extracurricular_Hours_Per_Day"]])
+    df[["Sleep_Hours_Per_Day"]] = scaler.fit_transform(df[["Sleep_Hours_Per_Day"]])
+    df[["Social_Hours_Per_Day"]] = scaler.fit_transform(df[["Social_Hours_Per_Day"]])
+    df[["Physical_Activity_Hours_Per_Day"]] = scaler.fit_transform(df[["Physical_Activity_Hours_Per_Day"]])
+    df[["GPA"]] = scaler.fit_transform(df[["GPA"]])
 
 main()
