@@ -19,7 +19,7 @@ def main():
     df_clean = preprocess_data(df)
     
     # exploratory data analysis
-    # draw_graphs(df_clean)
+    # draw_plots(df_clean)
     
     # separate features and target
     X = df_clean.drop('Stress_Level', axis=1)
@@ -37,10 +37,11 @@ def main():
     # feature engineering
     X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
     
+    model = train_logistic_regression(X_train_normalized, X_test_normalized, y_train, y_test, le)
+    evaluate_model(model, X, X_test_normalized, y_test, le)
+    
+def evaluate_model(model, X, X_test, y_test, le):
     feature_names = X.columns
-    model = train_logistic_regression(X_train_normalized, X_test_normalized, y_train, y_test, le, feature_names)
-    
-    
     y_pred = model.predict(X_test)
     
     # Evaluate
@@ -57,12 +58,15 @@ def main():
     })
     print(feature_importance.sort_values(by='Coefficient', ascending=False))
 
-def train_logistic_regression(X_train, X_test, y_train, y_test, le, feature_names):
+def train_logistic_regression(X_train, X_test, y_train, y_test, le):
     model = LogisticRegression(
         solver='lbfgs',
         max_iter=10000
     )
+    
     model.fit(X_train, y_train)
+
+    
     return model  
  
 def load_data():
@@ -121,7 +125,7 @@ def display_feature_boxplots(df):
         plt.title(f"{col} by Stress Level")
         plt.show()
 
-def draw_graphs(df):
+def draw_plots(df):
     display_feature_distributions_histogram(df)
     display_scatter_plot_matrix(df)
     display_correlation_heatmap(df)
@@ -134,7 +138,7 @@ def preprocess_data(df):
 
 def normalize_features(X_train, X_test):
     scaler = MinMaxScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
+    X_train_scaled = scaler.fit_transform(X_train)  # fit only on training data
     X_test_scaled = scaler.transform(X_test)    
     return X_train_scaled, X_test_scaled
 
