@@ -29,7 +29,6 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 **Figures:**
 ![Feature Distributions Historgram](images/feature_distributions_histogram.png)
 ![Scatter Plot Matrix](images/scatter_plot_matrix.png)
-![Correlation Heatmap](images/correlation_heatmap.png)
 ![Study Boxplot](images/boxplots_study_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_sleep_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_extracurricular_hours_per_day.png)
@@ -46,3 +45,14 @@ No missing values or duplicate rows were found in the dataset. Outliers in numer
 ![Missing Values](images/missing_values.png)
 ![Duplicate Entries](images/duplicate_entries.png)
 ![Duplicate Entries](images/removed_outliers.png)
+
+---
+
+## Feature Engineering
+
+To improve model performance and reduce redundancy, I performed feature engineering before training:
+- **GPA** was removed because it was highly correlated with **study time**, reducing redundant information and potential multicollinearity.
+- Features such as **extracurricular activity time** and **social time** were removed due to low predictive importance, minimizing noise and helping the model focus on the most relevant factors.
+
+![Correlation Heatmap](images/correlation_heatmap.png)
+![Feature Importance](images/feature_importance.png)

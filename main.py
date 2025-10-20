@@ -27,9 +27,9 @@ def main():
     # split into train and test data
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=0
-    )   
+    )
     
-    # feature engineering
+    # pre training processing
     X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
     
     # training
@@ -40,9 +40,14 @@ def main():
 
     # evaluation
     le = get_label_encoder(df_clean)
-    draw_feature_importance(model, X)
+    # draw_feature_importance(model, X)
     draw_confusion_matrix(y_test, y_pred, le)
     draw_classification_report(y_test, y_pred, le)
+    evaluate_accuracy(y_test, y_pred)
+
+def evaluate_accuracy(y_test, y_pred):
+    acc = accuracy_score(y_test, y_pred)
+    print(f"Model Accuracy: {acc:.4f}")
 
 def get_label_encoder(df):
     le = LabelEncoder()
@@ -50,16 +55,35 @@ def get_label_encoder(df):
     return le
 
 def draw_classification_report(y_test, y_pred, le):
-    report = classification_report(y_test, y_pred, output_dict=True, target_names=le.classes_)
-    df_report = pd.DataFrame(report).transpose()
-
-    df_report.loc[le.classes_, ["precision", "recall", "f1-score"]].plot(
-        kind="bar", figsize=(8, 5), rot=0, color=["#4C72B0", "#55A868", "#C44E52"]
+    report = classification_report(
+        y_test, y_pred, output_dict=True, target_names=le.classes_
     )
+    df_report = pd.DataFrame(report).transpose()
+    
+    metrics_df = df_report.loc[le.classes_, ["precision", "recall", "f1-score"]]
+    
+    ax = metrics_df.plot(
+        kind="bar",
+        figsize=(8, 5),
+        rot=0,
+        color=["#4C72B0", "#55A868", "#C44E52"]
+    )
+    
     plt.title("Classification Report Metrics")
     plt.ylabel("Score")
     plt.ylim(0, 1)
     plt.legend(loc="lower right")
+    
+    for p in ax.patches:
+        height = p.get_height()
+        ax.annotate(
+            f"{height:.2f}",
+            (p.get_x() + p.get_width() / 2, height),
+            ha='center',
+            va='bottom',
+            fontsize=9
+        )
+    
     plt.tight_layout()
     plt.show()
     
@@ -151,7 +175,7 @@ def remove_outliers(df):
     
     numeric_cols = df_clean.select_dtypes(include=[np.number]).columns
     if len(numeric_cols) == 0:
-        print("No numeric columns detected.")
+        # print("No numeric columns detected.")
         return df_clean
     
     mask = np.ones(len(df_clean), dtype=bool)
@@ -169,7 +193,7 @@ def remove_outliers(df):
     
     df_clean = df_clean[mask]
     
-    print(f"Removed {len(df) - len(df_clean)} outliers across {len(numeric_cols)} numeric columns.")
+    # print(f"Removed {len(df) - len(df_clean)} outliers across {len(numeric_cols)} numeric columns.")
     
     return df_clean
 
@@ -211,6 +235,9 @@ def draw_plots(df):
 def preprocess_data(df):
     #removing uneeded feature
     df.drop("Student_ID", axis=1, inplace=True)
+    df.drop("GPA", axis=1, inplace=True)
+    df.drop("Extracurricular_Hours_Per_Day", axis=1, inplace=True)
+    df.drop("Social_Hours_Per_Day", axis=1, inplace=True)
     df_clean = clean_data(df)
     order_data_stress_level(df_clean)
     df_clean = remove_outliers(df_clean)
