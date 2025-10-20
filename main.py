@@ -21,8 +21,6 @@ def main():
     # exploratory data analysis
     # draw_plots(df_clean)
     
-    le = get_label_encoder(df_clean)
-    
     # separate features and target
     X, y = separate_features_and_target(df_clean)
     
@@ -41,6 +39,7 @@ def main():
     y_pred = predict_target(model, X_test_normalized)
 
     # evaluation
+    le = get_label_encoder(df_clean)
     draw_feature_importance(model, X)
     draw_confusion_matrix(y_test, y_pred, le)
     draw_classification_report(y_test, y_pred, le)
@@ -148,19 +147,29 @@ def clean_data(df):
     return df_clean
 
 def remove_outliers(df):
-    numeric_cols = df.select_dtypes(include=['number']).columns
-    
     df_clean = df.copy()
     
+    numeric_cols = df_clean.select_dtypes(include=[np.number]).columns
+    if len(numeric_cols) == 0:
+        print("No numeric columns detected.")
+        return df_clean
+    
+    mask = np.ones(len(df_clean), dtype=bool)
+    
     for col in numeric_cols:
-        Q1 = df[col].quantile(0.25)
-        Q3 = df[col].quantile(0.75)
+        col_data = pd.to_numeric(df_clean[col], errors='coerce')
+        
+        Q1 = col_data.quantile(0.25)
+        Q3 = col_data.quantile(0.75)
         IQR = Q3 - Q1
-
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
-
-        df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
+        
+        mask &= col_data.between(lower_bound, upper_bound)
+    
+    df_clean = df_clean[mask]
+    
+    print(f"Removed {len(df) - len(df_clean)} outliers across {len(numeric_cols)} numeric columns.")
     
     return df_clean
 

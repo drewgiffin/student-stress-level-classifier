@@ -24,7 +24,7 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 - Students who study more are more likely to have a higher GPA and more stress.
 - Physical activity has a negative correlation with other activities, one being study and therefore stress.
 - Students who sleep more were less likely to be very stressed.
-- Some outliers were observed and will be need to be removed before training for more accurrate results.
+- Some outliers were observed and will be need to be removed before training for more accurate results.
 
 **Figures:**
 ![Feature Distributions Historgram](images/feature_distributions_histogram.png)
@@ -36,3 +36,13 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 ![Sleep Boxplot](images/boxplots_physical_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_social_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_gpa.png)
+
+---
+
+## Data Preprocessing
+
+No missing values or duplicate rows were found in the dataset. Outliers in numeric features were identified using the interquartile range (IQR) method and removed before training. This helps reduce the impact of extreme values and can improve model performance.
+
+![Missing Values](images/missing_values.png)
+![Duplicate Entries](images/duplicate_entries.png)
+![Duplicate Entries](images/removed_outliers.png)
