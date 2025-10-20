@@ -24,7 +24,7 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 - Students who study more are more likely to have a higher GPA and more stress.
 - Physical activity has a negative correlation with other activities, one being study and therefore stress.
 - Students who sleep more were less likely to be very stressed.
-- No extreme outliers were observed.
+- Some outliers were observed and will be need to be removed before training for more accurrate results.
 
 **Figures:**
 ![Feature Distributions Historgram](images/feature_distributions_histogram.png)

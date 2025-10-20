@@ -41,10 +41,8 @@ def main():
     y_pred = predict_target(model, X_test_normalized)
 
     # evaluation
-    evaluate_model(model, X, y_pred, y_test, le)
-    
+    draw_feature_importance(model, X)
     draw_confusion_matrix(y_test, y_pred, le)
-    
     draw_classification_report(y_test, y_pred, le)
 
 def get_label_encoder(df):
@@ -91,22 +89,26 @@ def separate_features_and_target(df):
     y = df['Stress_Level'].cat.codes
     return X, y
 
-def evaluate_model(model, X, y_pred, y_test, le):
-    feature_names = X.columns
-    
-    # Evaluate
-    print("Accuracy:", accuracy_score(y_test, y_pred))
-    print("\nClassification Report:")
-    print(classification_report(y_test, y_pred, target_names=le.classes_))
-    
-    print("\nConfusion Matrix:")
-    print(confusion_matrix(y_test, y_pred))
-    
+def draw_feature_importance(model, X):
     feature_importance = pd.DataFrame({
-        'Feature': feature_names,
-        'Coefficient': model.coef_[0]
+        'Feature': X.columns,
+        'Coefficient': -model.coef_[0]
     })
-    print(feature_importance.sort_values(by='Coefficient', ascending=False))
+
+    feature_importance['abs_coef'] = feature_importance['Coefficient'].abs()
+    feature_importance = feature_importance.sort_values(by='abs_coef', ascending=False) 
+    feature_importance = feature_importance.iloc[::-1]
+
+    colors = ['green' if c > 0 else 'red' for c in feature_importance['Coefficient']]
+
+    plt.figure(figsize=(8,6))
+    plt.barh(feature_importance['Feature'], feature_importance['Coefficient'], color=colors)
+    plt.xlabel("Coefficient (Impact on Stress Level)")
+    plt.ylabel("Feature")
+    plt.title("Feature Importance")
+    plt.axvline(0, color='black', linewidth=0.8)
+    plt.tight_layout()
+    plt.show()
 
 def train_logistic_regression(X_train, y_train):
     model = LogisticRegression(
@@ -134,13 +136,13 @@ def inspect_data(df):
     print("\n")
 
 def clean_data(df):
-    print("Missing values:")
-    print(df.isnull().sum())
-    print("\n")
+    # print("Missing values:")
+    # print(df.isnull().sum())
+    # print("\n")
     
-    print("Duplicate rows in dataset:")
-    print(df.duplicated().sum())
-    print("\n")
+    # print("Duplicate rows in dataset:")
+    # print(df.duplicated().sum())
+    # print("\n")
     
     df_clean = df.dropna(inplace=False)
     return df_clean
