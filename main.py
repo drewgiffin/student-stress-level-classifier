@@ -21,9 +21,10 @@ def main():
     # exploratory data analysis
     # draw_plots(df_clean)
     
+    le = get_label_encoder(df)
+    
     # separate features and target
-    le = LabelEncoder()
-    X, y = separate_features_and_target(df_clean, le)
+    X, y = separate_features_and_target(df_clean)
     
     # split into train and test data
     X_train, X_test, y_train, y_test = train_test_split(
@@ -43,7 +44,28 @@ def main():
     evaluate_model(model, X, y_pred, y_test, le)
     
     draw_confusion_matrix(y_test, y_pred, le)
+    
+    draw_classification_report(y_test, y_pred, le)
 
+def get_label_encoder(df):
+    le = LabelEncoder()
+    le.classes_ = np.array(df['Stress_Level'].cat.categories)
+    return le
+
+def draw_classification_report(y_test, y_pred, le):
+    report = classification_report(y_test, y_pred, output_dict=True, target_names=le.classes_)
+    df_report = pd.DataFrame(report).transpose()
+
+    df_report.loc[le.classes_, ["precision", "recall", "f1-score"]].plot(
+        kind="bar", figsize=(8, 5), rot=0, color=["#4C72B0", "#55A868", "#C44E52"]
+    )
+    plt.title("Classification Report Metrics")
+    plt.ylabel("Score")
+    plt.ylim(0, 1)
+    plt.legend(loc="lower right")
+    plt.tight_layout()
+    plt.show()
+    
 def draw_confusion_matrix(y_test, y_pred, le):
     y_test_decoded = le.inverse_transform(y_test)
     y_pred_decoded = le.inverse_transform(y_pred)
@@ -58,18 +80,15 @@ def draw_confusion_matrix(y_test, y_pred, le):
     plt.ylabel("Actual")
     plt.title("Confusion Matrix")
     plt.tight_layout()
-    plt.savefig("images/confusion_matrix.png", dpi=300)  # Save for README
     plt.show()
 
 def predict_target(model, X_test):
     y_pred = model.predict(X_test)
     return y_pred
 
-def separate_features_and_target(df, le):
+def separate_features_and_target(df): 
     X = df.drop('Stress_Level', axis=1)
-    y_raw = df['Stress_Level']
-    # encode target
-    y = le.fit_transform(y_raw)
+    y = df['Stress_Level'].cat.codes
     return X, y
 
 def evaluate_model(model, X, y_pred, y_test, le):
