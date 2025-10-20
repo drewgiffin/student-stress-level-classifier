@@ -33,9 +33,18 @@ def main():
     # feature engineering
     X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
     
-    model = train_logistic_regression(X_train_normalized, X_test_normalized, y_train, y_test, le)
+    # training
+    model = train_logistic_regression(X_train_normalized, y_train)
     
-    evaluate_model(model, X, X_test_normalized, y_test, le)
+    # prediction
+    y_pred = predict_target(model, X_test_normalized)
+
+    # evaluation
+    evaluate_model(model, X, y_pred, y_test, le)
+
+def predict_target(model, X_test):
+    y_pred = model.predict(X_test)
+    return y_pred
 
 def separate_features_and_target(df, le):
     X = df.drop('Stress_Level', axis=1)
@@ -44,9 +53,8 @@ def separate_features_and_target(df, le):
     y = le.fit_transform(y_raw)
     return X, y
 
-def evaluate_model(model, X, X_test, y_test, le):
+def evaluate_model(model, X, y_pred, y_test, le):
     feature_names = X.columns
-    y_pred = model.predict(X_test)
     
     # Evaluate
     print("Accuracy:", accuracy_score(y_test, y_pred))
@@ -62,21 +70,16 @@ def evaluate_model(model, X, X_test, y_test, le):
     })
     print(feature_importance.sort_values(by='Coefficient', ascending=False))
 
-def train_logistic_regression(X_train, X_test, y_train, y_test, le):
+def train_logistic_regression(X_train, y_train):
     model = LogisticRegression(
         solver='lbfgs',
         max_iter=10000
     )
-    
     model.fit(X_train, y_train)
-
-    
     return model  
  
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
-    #removing uneeded feature
-    df.drop("Student_ID", axis=1, inplace=True)
     return df
 
 def inspect_data(df):
@@ -140,6 +143,8 @@ def draw_plots(df):
     display_feature_boxplots(df)
 
 def preprocess_data(df):
+    #removing uneeded feature
+    df.drop("Student_ID", axis=1, inplace=True)
     df_clean = clean_data(df)
     order_data_stress_level(df_clean)
     return df_clean
