@@ -3,9 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
 
 data_path = "student_lifestyle_dataset.csv"
 
@@ -17,10 +19,7 @@ def main():
     df_clean = preprocess_data(df)
     
     # exploratory data analysis
-    # draw_plots(df_clean)
-    
-    # feature engineering
-    normalize_features(df_clean)
+    # draw_graphs(df_clean)
     
     # separate features and target
     X = df_clean.drop('Stress_Level', axis=1)
@@ -32,16 +31,40 @@ def main():
     
     # split into train and test data
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, stratify=y
+        X, y, test_size=0.2, stratify=y, random_state=0
     )   
     
-    # sanity check
-    print("Classes:", le.classes_)
-    print("y_train distribution:", pd.Series(y_train).value_counts(normalize=True))
-    print("y_test distribution:", pd.Series(y_test).value_counts(normalize=True))
-    print("X_train shape:", X_train.shape, "X_test shape:", X_test.shape)
+    # feature engineering
+    X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
+    
+    feature_names = X.columns
+    model = train_logistic_regression(X_train_normalized, X_test_normalized, y_train, y_test, le, feature_names)
     
     
+    y_pred = model.predict(X_test)
+    
+    # Evaluate
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred, target_names=le.classes_))
+    
+    print("\nConfusion Matrix:")
+    print(confusion_matrix(y_test, y_pred))
+    
+    feature_importance = pd.DataFrame({
+        'Feature': feature_names,
+        'Coefficient': model.coef_[0]
+    })
+    print(feature_importance.sort_values(by='Coefficient', ascending=False))
+
+def train_logistic_regression(X_train, X_test, y_train, y_test, le, feature_names):
+    model = LogisticRegression(
+        solver='lbfgs',
+        max_iter=10000
+    )
+    model.fit(X_train, y_train)
+    return model  
+ 
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
     #removing uneeded feature
@@ -98,7 +121,7 @@ def display_feature_boxplots(df):
         plt.title(f"{col} by Stress Level")
         plt.show()
 
-def draw_plots(df):
+def draw_graphs(df):
     display_feature_distributions_histogram(df)
     display_scatter_plot_matrix(df)
     display_correlation_heatmap(df)
@@ -109,13 +132,10 @@ def preprocess_data(df):
     order_data_stress_level(df_clean)
     return df_clean
 
-def normalize_features(df):
+def normalize_features(X_train, X_test):
     scaler = MinMaxScaler()
-    df[["Study_Hours_Per_Day"]] = scaler.fit_transform(df[["Study_Hours_Per_Day"]])
-    df[["Extracurricular_Hours_Per_Day"]] = scaler.fit_transform(df[["Extracurricular_Hours_Per_Day"]])
-    df[["Sleep_Hours_Per_Day"]] = scaler.fit_transform(df[["Sleep_Hours_Per_Day"]])
-    df[["Social_Hours_Per_Day"]] = scaler.fit_transform(df[["Social_Hours_Per_Day"]])
-    df[["Physical_Activity_Hours_Per_Day"]] = scaler.fit_transform(df[["Physical_Activity_Hours_Per_Day"]])
-    df[["GPA"]] = scaler.fit_transform(df[["GPA"]])
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)    
+    return X_train_scaled, X_test_scaled
 
 main()
