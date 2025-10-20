@@ -22,12 +22,8 @@ def main():
     # draw_plots(df_clean)
     
     # separate features and target
-    X = df_clean.drop('Stress_Level', axis=1)
-    y_raw = df_clean['Stress_Level']
-        
-    # encode target
     le = LabelEncoder()
-    y = le.fit_transform(y_raw)
+    X, y = separate_features_and_target(df_clean, le)
     
     # split into train and test data
     X_train, X_test, y_train, y_test = train_test_split(
@@ -38,8 +34,16 @@ def main():
     X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
     
     model = train_logistic_regression(X_train_normalized, X_test_normalized, y_train, y_test, le)
-    evaluate_model(model, X, X_test_normalized, y_test, le)
     
+    evaluate_model(model, X, X_test_normalized, y_test, le)
+
+def separate_features_and_target(df, le):
+    X = df.drop('Stress_Level', axis=1)
+    y_raw = df['Stress_Level']
+    # encode target
+    y = le.fit_transform(y_raw)
+    return X, y
+
 def evaluate_model(model, X, X_test, y_test, le):
     feature_names = X.columns
     y_pred = model.predict(X_test)
@@ -89,11 +93,15 @@ def inspect_data(df):
     print("\n")
 
 def clean_data(df):
-    # print("Missing values:")
-    # print(df.isnull().sum())
-    # print("\n")
+    print("Missing values:")
+    print(df.isnull().sum())
+    print("\n")
     
-    df.dropna(inplace=False)
+    print("Duplicate rows in dataset:")
+    print(df.duplicated().sum())
+    print("\n")
+    
+    df.dropna(inplace=True)
     return df
 
 def order_data_stress_level(df):
