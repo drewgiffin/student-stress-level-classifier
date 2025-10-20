@@ -21,7 +21,7 @@ def main():
     # exploratory data analysis
     # draw_plots(df_clean)
     
-    le = get_label_encoder(df)
+    le = get_label_encoder(df_clean)
     
     # separate features and target
     X, y = separate_features_and_target(df_clean)
@@ -142,8 +142,25 @@ def clean_data(df):
     print(df.duplicated().sum())
     print("\n")
     
-    df.dropna(inplace=True)
-    return df
+    df_clean = df.dropna(inplace=False)
+    return df_clean
+
+def remove_outliers(df):
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    
+    df_clean = df.copy()
+    
+    for col in numeric_cols:
+        Q1 = df[col].quantile(0.25)
+        Q3 = df[col].quantile(0.75)
+        IQR = Q3 - Q1
+
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+
+        df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
+    
+    return df_clean
 
 def order_data_stress_level(df):
     df["Stress_Level"] = pd.Categorical(
@@ -185,6 +202,7 @@ def preprocess_data(df):
     df.drop("Student_ID", axis=1, inplace=True)
     df_clean = clean_data(df)
     order_data_stress_level(df_clean)
+    df_clean = remove_outliers(df_clean)
     return df_clean
 
 def normalize_features(X_train, X_test):
