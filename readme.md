@@ -29,12 +29,14 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 **Figures:**
 ![Feature Distributions Historgram](images/feature_distributions_histogram.png)
 ![Scatter Plot Matrix](images/scatter_plot_matrix.png)
+![Correlation Heatmap](images/correlation_heatmap.png)
 ![Study Boxplot](images/boxplots_study_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_sleep_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_extracurricular_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_physical_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_social_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_gpa.png)
+![Feature Importance](images/feature_importance.png)
 
 ---
 
@@ -54,5 +56,8 @@ To improve model performance and reduce redundancy, I performed feature engineer
 - **GPA** was removed because it was highly correlated with **study time**, reducing redundant information and potential multicollinearity.
 - Features such as **extracurricular activity time** and **social time** were removed due to low predictive importance, minimizing noise and helping the model focus on the most relevant factors.
 
-![Correlation Heatmap](images/correlation_heatmap.png)
-![Feature Importance](images/feature_importance.png)
+---
+
+## Modeling
+
+This model was made using **logistic regression**, it works well in this situation because it models the probability of each class based on the input features, making it effective for categorical outcomes. After experimenting with different hyperparameter settings, including various solvers and iteration limits, I found that removing them entirely did not noticeably change the model's performance, indicating that the default configuration worked well enough for this purpose.

@@ -41,8 +41,8 @@ def main():
     # evaluation
     le = get_label_encoder(df_clean)
     # draw_feature_importance(model, X)
-    draw_confusion_matrix(y_test, y_pred, le)
-    draw_classification_report(y_test, y_pred, le)
+    # draw_confusion_matrix(y_test, y_pred, le)
+    # draw_classification_report(y_test, y_pred, le)
     evaluate_accuracy(y_test, y_pred)
 
 def evaluate_accuracy(y_test, y_pred):
@@ -134,12 +134,9 @@ def draw_feature_importance(model, X):
     plt.show()
 
 def train_logistic_regression(X_train, y_train):
-    model = LogisticRegression(
-        solver='lbfgs',
-        max_iter=10000
-    )
+    model = LogisticRegression()
     model.fit(X_train, y_train)
-    return model  
+    return model
  
 def load_data():
     df = pd.read_csv(data_path, encoding="ascii", delimiter=",")
