@@ -84,3 +84,41 @@ Overall, the current state of the model is fairly reliable in predicting high-st
 Physical activity showed a small connection to lower stress levels, but this relationship was not consistent across all students. In fact, increased time spent exercising may slightly reduce GPA, suggesting that excessive physical activity could detract from study time.
 
 The process that produced these results was intentionally straightforward: a classification problem addressed using logistic regression to predict stress levels. Future improvements could include experimenting with more complex models such as random forests or gradient boosting. Additionally, only a single training and test split was used in this study. Incorporating cross-validation would likely provide more stable and trustworthy performance estimates by reducing the variance introduced by a single random split.
+
+---
+
+## How to Run
+
+1. Clone the repository
+
+    `git clone https://github.com/drewgiffin/student-stress-level-classifier`  
+    `cd student-stress-level-classifier`
+
+2. Create a virtual enviornment (recommended), and activate it
+
+    `python -m venv venv`
+
+- Windows
+
+    `venv\Scripts\activate`
+
+- macOS / Linux
+
+    `source venv/bin/activate`
+
+3. Install dependencies
+
+    `pip install -r requirements.txt`
+
+4. Run the program
+
+    `python main.py`
+
+### Notes:
+Right now, the program only outputs the average accuracy after running the 1,000 random train/test splits.
+If you want to visualize the results yourself:
+1. Remove the model training loop that stores the accuracy scores.
+
+2. Uncomment the `draw_` methods in the main method.
+
+This allows you to view the analysis graphs instead of just the aggregated accuracy results.
