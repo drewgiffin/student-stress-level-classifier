@@ -1,4 +1,4 @@
-# Student Habits and Stress Prediction Analysis
+# Student Stress Level Classifier
 
 A machine learning project that examines the habits of students with the goal of gaining insight into how their daily routines may affect their stress levels. Habits such as studying, extracurricular involvement, sleep, socialization, and physical activity, as well as performance indicators like GPA, are analyzed to understand their correlation with stress.
 
@@ -24,7 +24,7 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 - Students who study more are more likely to have a higher GPA and more stress.
 - Physical activity has a negative correlation with other activities, one being study and therefore stress.
 - Students who sleep more were less likely to be very stressed.
-- No extreme outliers were observed.
+- Some outliers were observed and will be need to be removed before training for more accurate results.
 
 **Figures:**
 ![Feature Distributions Historgram](images/feature_distributions_histogram.png)
@@ -36,3 +36,95 @@ The target variable is the **stress level**, indicated as *low*, *moderate* or *
 ![Sleep Boxplot](images/boxplots_physical_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_social_hours_per_day.png)
 ![Sleep Boxplot](images/boxplots_gpa.png)
+![Feature Importance](images/feature_importance.png)
+
+---
+
+## Data Preprocessing
+
+No missing values or duplicate rows were found in the dataset. Outliers in numeric features were identified using the interquartile range (IQR) method and removed before training. This helps reduce the impact of extreme values and can improve model performance.
+
+![Missing Values](images/missing_values.png)
+![Duplicate Entries](images/duplicate_entries.png)
+![Removed Outliers](images/removed_outliers.png)
+
+---
+
+## Feature Engineering
+
+To improve model performance and reduce redundancy, I performed feature engineering before training:
+- **GPA** was removed because it was highly correlated with **study time**, reducing redundant information and potential multicollinearity.
+- Features such as **extracurricular activity time** and **social time** were removed due to low predictive importance, minimizing noise and helping the model focus on the most relevant factors.
+
+---
+
+## Modeling
+
+This model was made using **logistic regression**, it works well in this situation because it models the probability of each class based on the input features, making it effective for categorical outcomes. After experimenting with different hyperparameter settings, including various solvers and iteration limits, I found that removing them entirely did not noticeably change the model's performance, indicating that the default configuration worked well enough for this purpose.
+
+---
+
+## Results
+
+To ensure better results, the model was trained and evaluated using 1,000 different random seeds for splitting the training and test data. Across all samples, the model scored an accuracy of **82.6%**, indicating strong performance. 
+
+As shown in the confusion matrix, each classification yielded slightly different results. The **high stress** students were the most identifiable, with **precision, recall, and F1-scores all above 86%**. The **moderate stress** group was the most challenging to predict, though still produced reasonable scores. This is somewhat expected, as students in the moderate category often displayed activity patterns that blended characteristics of both high and low stress groups, making them more prone to being categorized as on the extremes.
+
+Also, because stress is a subjective measurement, some inconsistency in labeling is expected. Students who appear to belong to one stress category based on their activities might self-report differently due to personal coping mechanisms or varying perceptions of what "stress" means to them. This subjectivity likely contributes to occasional misclassifications, even when the model's performance is otherwise strong.
+
+![Classification Report](images/classification_report.png)
+![Confusion Matrix](images/confusion_matrix.png)
+
+---
+
+## Conclusion
+
+Overall, the current state of the model is fairly reliable in predicting high-stress students. The main goal was to identify these students and provide insight into lifestyle adjustments that could help reduce stress without compromising academic performance. For students with GPAs near 4.0, this balance appears more difficult to achieve. Their elevated stress levels are often linked to the amount of time spent studying — the same factor driving their strong performance. For these students, ensuring adequate sleep (at least six hours per night) may be the most effective way to manage stress.
+
+Physical activity showed a small connection to lower stress levels, but this relationship was not consistent across all students. In fact, increased time spent exercising may slightly reduce GPA, suggesting that excessive physical activity could detract from study time.
+
+The process that produced these results was intentionally straightforward: a classification problem addressed using logistic regression to predict stress levels. Future improvements could include experimenting with more complex models such as random forests or gradient boosting. Additionally, only a single training and test split was used in this study. Incorporating cross-validation would likely provide more stable and trustworthy performance estimates by reducing the variance introduced by a single random split.
+
+---
+
+## How to Run
+
+1. Clone the repository
+
+    `git clone https://github.com/drewgiffin/student-stress-level-classifier`  
+    `cd student-stress-level-classifier`
+
+2. Create a virtual enviornment (recommended), and activate it
+
+    `python -m venv venv`
+
+- Windows
+
+    `venv\Scripts\activate`
+
+- macOS / Linux
+
+    `source venv/bin/activate`
+
+3. Install dependencies
+
+    `pip install -r requirements.txt`
+
+4. Run the program
+
+    `python main.py`
+
+### Notes:
+Right now, the program only outputs the average accuracy after running the 1,000 random train/test splits.
+If you want to visualize the results yourself:
+1. Remove the model training loop that stores the accuracy scores.
+
+2. Uncomment the `draw_` methods in the main method.
+
+This allows you to view the analysis graphs instead of just the aggregated accuracy results.
+
+---
+
+## References
+
+- [Study Habits and Activities of Students Dataset - Kaggle](https://www.kaggle.com/datasets/afnansaifafnan/study-habits-and-activities-of-students)
