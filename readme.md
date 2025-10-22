@@ -66,6 +66,11 @@ This model was made using **logistic regression**, it works well in this situati
 
 ## Results
 
-![Accuracy](images/accuracy.png)
+To ensure better results, the model was trained and evaluated using 1,000 different random seeds for splitting the training and test data. Across all samples, the model scored an accuracy of **82.6%**, indicating strong performance. 
+
+As shown in the confusion matrix, each classification yielded slightly different results. The **high stress** students were the most identifiable, with **precision, recall, and F1-scores all above 86%**. The **moderate stress** group was the most challenging to predict, though still produced reasonable scores. This is somewhat expected, as students in the moderate category often displayed activity patterns that blended characteristics of both high and low stress groups, making them more prone to being categorized as on the extremes.
+
+Also, because stress is a subjective measurement, some inconsistency in labeling is expected. Students who appear to belong to one stress category based on their activities might self-report differently due to personal coping mechanisms or varying perceptions of what "stress" means to them. This subjectivity likely contributes to occasional misclassifications, even when the model's performance is otherwise strong.
+
 ![Classification Report](images/classification_report.png)
 ![Confusion Matrix](images/confusion_matrix.png)
