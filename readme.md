@@ -122,3 +122,9 @@ If you want to visualize the results yourself:
 2. Uncomment the `draw_` methods in the main method.
 
 This allows you to view the analysis graphs instead of just the aggregated accuracy results.
+
+---
+
+## References
+
+- [Study Habits and Activities of Students Dataset - Kaggle](https://www.kaggle.com/datasets/afnansaifafnan/study-habits-and-activities-of-students)
