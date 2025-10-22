@@ -74,3 +74,13 @@ Also, because stress is a subjective measurement, some inconsistency in labeling
 
 ![Classification Report](images/classification_report.png)
 ![Confusion Matrix](images/confusion_matrix.png)
+
+---
+
+## Conclusion
+
+Overall, the current state of the model is fairly reliable in predicting high-stress students. The main goal was to identify these students and provide insight into lifestyle adjustments that could help reduce stress without compromising academic performance. For students with GPAs near 4.0, this balance appears more difficult to achieve. Their elevated stress levels are often linked to the amount of time spent studying — the same factor driving their strong performance. For these students, ensuring adequate sleep (at least six hours per night) may be the most effective way to manage stress.
+
+Physical activity showed a small connection to lower stress levels, but this relationship was not consistent across all students. In fact, increased time spent exercising may slightly reduce GPA, suggesting that excessive physical activity could detract from study time.
+
+The process that produced these results was intentionally straightforward: a classification problem addressed using logistic regression to predict stress levels. Future improvements could include experimenting with more complex models such as random forests or gradient boosting. Additionally, only a single training and test split was used in this study. Incorporating cross-validation would likely provide more stable and trustworthy performance estimates by reducing the variance introduced by a single random split.
