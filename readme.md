@@ -46,7 +46,7 @@ No missing values or duplicate rows were found in the dataset. Outliers in numer
 
 ![Missing Values](images/missing_values.png)
 ![Duplicate Entries](images/duplicate_entries.png)
-![Duplicate Entries](images/removed_outliers.png)
+![Removed Outliers](images/removed_outliers.png)
 
 ---
 
@@ -61,3 +61,11 @@ To improve model performance and reduce redundancy, I performed feature engineer
 ## Modeling
 
 This model was made using **logistic regression**, it works well in this situation because it models the probability of each class based on the input features, making it effective for categorical outcomes. After experimenting with different hyperparameter settings, including various solvers and iteration limits, I found that removing them entirely did not noticeably change the model's performance, indicating that the default configuration worked well enough for this purpose.
+
+---
+
+## Results
+
+![Accuracy](images/accuracy.png)
+![Classification Report](images/classification_report.png)
+![Confusion Matrix](images/confusion_matrix.png)

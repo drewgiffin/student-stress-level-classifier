@@ -25,29 +25,35 @@ def main():
     X, y = separate_features_and_target(df_clean)
     
     # split into train and test data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=0
-    )
+    accuracy_scores = []
+    # run training many times using different splits to get an average accuracy score 
+    for i in range(1000):
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, stratify=y, random_state=i
+        )
     
-    # pre training processing
-    X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
-    
-    # training
-    model = train_logistic_regression(X_train_normalized, y_train)
-    
-    # prediction
-    y_pred = predict_target(model, X_test_normalized)
+        # pre training processing
+        X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
+        
+        # training
+        model = train_logistic_regression(X_train_normalized, y_train)
+        
+        # prediction
+        y_pred = predict_target(model, X_test_normalized)
 
-    # evaluation
-    le = get_label_encoder(df_clean)
-    # draw_feature_importance(model, X)
-    # draw_confusion_matrix(y_test, y_pred, le)
-    # draw_classification_report(y_test, y_pred, le)
-    evaluate_accuracy(y_test, y_pred)
+        # evaluation
+        le = get_label_encoder(df_clean)
+        # draw_feature_importance(model, X)
+        # draw_confusion_matrix(y_test, y_pred, le)
+        # draw_classification_report(y_test, y_pred, le)
+        accuracy = get_accuracy(y_test, y_pred)
+        accuracy_scores.append(accuracy)
+    print(f"Average Accuracy: {np.mean(accuracy_scores):.4f}")
+    print(f"Samples: {len(accuracy_scores)}")
 
-def evaluate_accuracy(y_test, y_pred):
-    acc = accuracy_score(y_test, y_pred)
-    print(f"Model Accuracy: {acc:.4f}")
+def get_accuracy(y_test, y_pred):
+    accuracy = accuracy_score(y_test, y_pred)
+    return accuracy
 
 def get_label_encoder(df):
     le = LabelEncoder()
