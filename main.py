@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
+from xgboost import XGBClassifier
+
 
 data_path = "student_lifestyle_dataset.csv"
 
@@ -25,7 +27,8 @@ def main():
     X, y = separate_features_and_target(df_clean)
     
     # split into train and test data
-    accuracy_scores = []
+    accuracy_scores_xgb = []
+    accuracy_scores_lr = []
     # run training many times using different splits to get an average accuracy score 
     for i in range(1000):
         X_train, X_test, y_train, y_test = train_test_split(
@@ -36,20 +39,25 @@ def main():
         X_train_normalized, X_test_normalized = normalize_features(X_train, X_test)
         
         # training
-        model = train_logistic_regression(X_train_normalized, y_train)
+        model_xgb = train_model(X_train_normalized, y_train, XGBClassifier())
+        model_lr = train_model(X_train_normalized, y_train, LogisticRegression())
         
         # prediction
-        y_pred = predict_target(model, X_test_normalized)
+        y_pred_xgb = model_xgb.predict(X_test_normalized)
+        y_pred_lr = model_lr.predict(X_test_normalized)
 
         # evaluation
         le = get_label_encoder(df_clean)
         # draw_feature_importance(model, X)
         # draw_confusion_matrix(y_test, y_pred, le)
         # draw_classification_report(y_test, y_pred, le)
-        accuracy = get_accuracy(y_test, y_pred)
-        accuracy_scores.append(accuracy)
-    print(f"Average Accuracy: {np.mean(accuracy_scores):.4f}")
-    print(f"Samples: {len(accuracy_scores)}")
+        accuracy_xgb = get_accuracy(y_test, y_pred_xgb)
+        accuracy_lr = get_accuracy(y_test, y_pred_lr)
+        accuracy_scores_xgb.append(accuracy_xgb)
+        accuracy_scores_lr.append(accuracy_lr)
+    print(f"Average Accuracy XGB: {np.mean(accuracy_scores_xgb):.4f}")
+    print(f"Average Accuracy LR: {np.mean(accuracy_scores_lr):.4f}")
+    print(f"Samples: {len(accuracy_scores_xgb)}")
 
 def get_accuracy(y_test, y_pred):
     accuracy = accuracy_score(y_test, y_pred)
@@ -109,10 +117,6 @@ def draw_confusion_matrix(y_test, y_pred, le):
     plt.tight_layout()
     plt.show()
 
-def predict_target(model, X_test):
-    y_pred = model.predict(X_test)
-    return y_pred
-
 def separate_features_and_target(df): 
     X = df.drop('Stress_Level', axis=1)
     y = df['Stress_Level'].cat.codes
@@ -139,8 +143,8 @@ def draw_feature_importance(model, X):
     plt.tight_layout()
     plt.show()
 
-def train_logistic_regression(X_train, y_train):
-    model = LogisticRegression()
+def train_model(X_train, y_train, method):
+    model = method
     model.fit(X_train, y_train)
     return model
  
